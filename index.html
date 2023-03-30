@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz</title>
+</head>
+<body>
+    <form id="quiz-form">
+        <h1>Quiz</h1>
+        <p>Question 1: What is the capital of France?</p>
+        <input type="radio" name="q1" value="a"> a) Berlin<br>
+        <input type="radio" name="q1" value="b"> b) Paris<br>
+        <input type="radio" name="q1" value="c"> c) Madrid<br>
+
+        <p>Question 2: Who is the author of "The Great Gatsby"?</p>
+        <input type="radio" name="q2" value="a"> a) Ernest Hemingway<br>
+        <input type="radio" name="q2" value="b"> b) F. Scott Fitzgerald<br>
+        <input type="radio" name="q2" value="c"> c) William Faulkner<br>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <div id="results"></div>
+
+    <script>
+        // Submit the quiz answers using AJAX
+        const form = document.getElementById('quiz-form');
+        form.addEventListener('submit', event => {
+            event.preventDefault(); // prevent form submission
+            const formData = new FormData(form);
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/quiz');
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    const resultsDiv = document.getElementById('results');
+                    const response = JSON.parse(xhr.response);
+                    const score = response.score;
+                    const total = response.total;
+                    const percentage = (score / total) * 100;
+                    const message = `You scored ${score} out of ${total} (${percentage}%).`;
+                    resultsDiv.innerHTML = message;
+                } else {
+                    console.error(xhr.statusText);
+                }
+            };
+            xhr.onerror = function() {
+                console.error(xhr.statusText);
+            };
+            xhr.send(formData);
+        });
+    </script>
+</body>
+</html>
